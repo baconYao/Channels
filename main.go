@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func main() {
@@ -25,7 +26,16 @@ func main() {
 	}
 
 	// 從channel接收被傳遞的訊息
-	fmt.Println(<-c)
+	// fmt.Println(<-c)
+
+	
+	for l := range c {
+		// function literal  類似於 js 的 anonmous function / python 的 lambda
+		go func(link string) {
+			time.Sleep(5 * time.Second)
+			checkLink(link, c)
+		}(l)
+	}
 }
 
 func checkLink(link string, c chan string) {
@@ -40,5 +50,7 @@ func checkLink(link string, c chan string) {
 
 	fmt.Println(link, "is up!")
 	// 傳遞訊息給channel (注意: fmt.Println(link, "is up!") 也會一起傳遞)
-	c <- "Yep it's up"
+	// c <- "Yep it's up"
+
+	c <- link
 }
